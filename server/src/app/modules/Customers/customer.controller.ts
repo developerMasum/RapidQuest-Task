@@ -25,8 +25,20 @@ const getNumberOfRepeatCustomers = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getGeographicalDistribution = catchAsync(async (req, res) => {
+  const result = await CustomerService.getGeographicalDistribution();
+  console.log(result);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: ' NumberOfRepeatCustomers  retrieved successfully',
+    data: result,
+  });
+});
 
 export const CustomerController = {
   getCustomerAddedOverTime,
   getNumberOfRepeatCustomers,
+  getGeographicalDistribution,
 };

@@ -126,7 +126,25 @@ const getCustomerPurchaseDetails = async () => {
   return result;
 };
 
+// ------------------------------------------------------------------------------------------
+const getGeographicalDistribution = async () => {
+  const result = await shopifyCustomers.aggregate([
+    {
+      $group: {
+        _id: '$default_address.city',
+        totalCustomers: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { totalCustomers: -1 },
+    },
+  ]);
+
+  return result;
+};
+
 export const CustomerService = {
   getNewCustomersOverTime,
   getNumberOfRepeatCustomers: getCustomerPurchaseDetails,
+  getGeographicalDistribution,
 };
