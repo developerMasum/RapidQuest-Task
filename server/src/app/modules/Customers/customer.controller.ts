@@ -32,7 +32,18 @@ const getGeographicalDistribution = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: ' NumberOfRepeatCustomers  retrieved successfully',
+    message: 'GEO LOCATION  retrieved successfully',
+    data: result,
+  });
+});
+const getCustomerLifetimeValueByCohorts = catchAsync(async (req, res) => {
+  const result = await CustomerService.getCustomerLifetimeValueByCohorts();
+  console.log(result);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'GEO LOCATION  retrieved successfully',
     data: result,
   });
 });
@@ -41,4 +52,5 @@ export const CustomerController = {
   getCustomerAddedOverTime,
   getNumberOfRepeatCustomers,
   getGeographicalDistribution,
+  getCustomerLifetimeValueByCohorts,
 };

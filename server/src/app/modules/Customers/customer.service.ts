@@ -143,8 +143,75 @@ const getGeographicalDistribution = async () => {
   return result;
 };
 
+// ------------------------------------------------------------------------------------------{todo}
+
+const getCustomerLifetimeValueByCohorts = async () => {
+  // Step 1: Get the first purchase month for each customer
+  const customerFirstPurchase = await shopifyOrder.aggregate([
+    {
+      $group: {
+        _id: '$customer.id',
+        firstPurchaseMonth: {
+          $min: { $dateToString: { format: '%Y-%m', date: '$created_at' } },
+        },
+      },
+    },
+  ]);
+
+  // Step 2: Join the first purchase month with customer data
+  const customerFirstPurchaseMap = {};
+  customerFirstPurchase.forEach((record) => {
+    customerFirstPurchaseMap[record._id] = record.firstPurchaseMonth;
+  });
+
+  // Step 3: Calculate CLV for each cohort
+  const result = await shopifyOrder.aggregate([
+    {
+      $group: {
+        _id: {
+          customerId: '$customer.id',
+          cohortMonth: {
+            $arrayElemAt: [
+              {
+                $split: [
+                  {
+                    $dateToString: { format: '%Y-%m', date: '$created_at' },
+                  },
+                  '-',
+                ],
+              },
+              0,
+            ],
+          },
+        },
+        totalRevenue: {
+          $sum: { $toDouble: '$total_price_set.shop_money.amount' },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: '$_id.cohortMonth',
+        cohorts: {
+          $push: {
+            customerId: '$_id.customerId',
+            totalRevenue: '$totalRevenue',
+          },
+        },
+        totalCLV: { $sum: '$totalRevenue' },
+      },
+    },
+    {
+      $sort: { _id: 1 }, // Sort by cohort month
+    },
+  ]);
+
+  return result;
+};
+
 export const CustomerService = {
   getNewCustomersOverTime,
   getNumberOfRepeatCustomers: getCustomerPurchaseDetails,
   getGeographicalDistribution,
+  getCustomerLifetimeValueByCohorts,
 };
