@@ -4,8 +4,9 @@ import catchAsync from '../../utils/catchAsync';
 import { OrderService } from './order.service';
 
 const getOrderData = catchAsync(async (req, res) => {
-  const result = await OrderService.getOrders(req.body);
-  console.log(result);
+  const { interval } = req.query as { interval: string };
+  const result = await OrderService.getOrders({ interval });
+  console.log(interval);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

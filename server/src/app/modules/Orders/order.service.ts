@@ -1,8 +1,9 @@
 import { shopifyOrder } from './order.model';
 
 const getTotalSalesOverTime = async ({ interval }: { interval: string }) => {
+  // console.log(sendData);
   let groupBy;
-
+  // const interval = 'daily';
   // Determine the grouping interval
   switch (interval) {
     case 'daily':
