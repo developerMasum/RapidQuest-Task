@@ -143,11 +143,22 @@ const getGeographicalDistribution = async () => {
   return result;
 };
 
-// ------------------------------------------------------------------------------------------{todo}
+// ------------------------------------------------------------------------------------------{check-again}
 
 const getCustomerLifetimeValueByCohorts = async () => {
   // Step 1: Get the first purchase month for each customer
+
   const customerFirstPurchase = await shopifyOrder.aggregate([
+    {
+      $match: {
+        created_at: { $exists: true, $ne: null },
+      },
+    },
+    {
+      $addFields: {
+        created_at: { $toDate: '$created_at' }, // Convert to date
+      },
+    },
     {
       $group: {
         _id: '$customer.id',
@@ -158,47 +169,48 @@ const getCustomerLifetimeValueByCohorts = async () => {
     },
   ]);
 
-  // Step 2: Join the first purchase month with customer data
-  const customerFirstPurchaseMap = {};
+  // Step 2: Create a map of customer ID to their first purchase month
+  const customerFirstPurchaseMap: Record<string, string> = {};
   customerFirstPurchase.forEach((record) => {
     customerFirstPurchaseMap[record._id] = record.firstPurchaseMonth;
   });
 
-  // Step 3: Calculate CLV for each cohort
+  // Step 3: Calculate CLV for each cohort based on the first purchase month
   const result = await shopifyOrder.aggregate([
     {
-      $group: {
-        _id: {
-          customerId: '$customer.id',
-          cohortMonth: {
-            $arrayElemAt: [
-              {
-                $split: [
+      $match: {
+        created_at: { $exists: true, $ne: null },
+      },
+    },
+    {
+      $addFields: {
+        created_at: { $toDate: '$created_at' }, // Convert to date
+        firstPurchaseMonth: {
+          $let: {
+            vars: {
+              firstPurchase: {
+                $arrayElemAt: [
                   {
-                    $dateToString: { format: '%Y-%m', date: '$created_at' },
+                    $filter: {
+                      input: customerFirstPurchase,
+                      as: 'c',
+                      cond: { $eq: ['$$c._id', '$customer.id'] },
+                    },
                   },
-                  '-',
+                  0,
                 ],
               },
-              0,
-            ],
+            },
+            in: '$$firstPurchase.firstPurchaseMonth',
           },
-        },
-        totalRevenue: {
-          $sum: { $toDouble: '$total_price_set.shop_money.amount' },
         },
       },
     },
     {
       $group: {
-        _id: '$_id.cohortMonth',
-        cohorts: {
-          $push: {
-            customerId: '$_id.customerId',
-            totalRevenue: '$totalRevenue',
-          },
-        },
-        totalCLV: { $sum: '$totalRevenue' },
+        _id: '$firstPurchaseMonth',
+        totalCLV: { $sum: { $toDouble: '$total_price_set.shop_money.amount' } },
+        customerCount: { $sum: 1 },
       },
     },
     {
