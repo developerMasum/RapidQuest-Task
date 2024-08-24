@@ -1,6 +1,6 @@
 import { shopifyOrder } from './order.model';
 
-const getTotalSalesOverTime = async (interval = 'daily') => {
+const getTotalSalesOverTime = async ({ interval }: { interval: string }) => {
   let groupBy;
 
   // Determine the grouping interval
@@ -77,45 +77,64 @@ const getTotalSalesOverTime = async (interval = 'daily') => {
   return result;
 };
 
-const getCustomerPurchaseDetails = async () => {
+const getSalesGrowthRateOverTime = async () => {
   const result = await shopifyOrder.aggregate([
     {
+      $addFields: {
+        purchaseMonth: {
+          $dateToString: { format: '%Y-%m', date: { $toDate: '$created_at' } },
+        }, // Extract year-month from created_at
+      },
+    },
+    {
       $group: {
-        _id: '$customer.id',
-        repeatedTimes: { $sum: 1 },
-        firstPurchaseDate: { $min: '$created_at' },
-        lastPurchaseDate: { $max: '$created_at' },
+        _id: '$purchaseMonth',
+        totalSales: {
+          $sum: { $toDouble: '$total_price_set.shop_money.amount' },
+        },
       },
     },
     {
-      $lookup: {
-        from: 'shopifyCustomers',
-        localField: '_id',
-        foreignField: 'id',
-        as: 'customerDetails',
+      $sort: { _id: 1 }, // Sort by month in ascending order
+    },
+    {
+      $setWindowFields: {
+        sortBy: { _id: 1 },
+        output: {
+          previousSales: {
+            $shift: { output: '$totalSales', by: -1 }, // Get previous month's sales
+          },
+        },
       },
     },
     {
-      $unwind: '$customerDetails',
+      $addFields: {
+        growthRate: {
+          $cond: {
+            if: { $eq: ['$previousSales', null] },
+            then: null,
+            else: {
+              $multiply: [
+                {
+                  $divide: [
+                    { $subtract: ['$totalSales', '$previousSales'] },
+                    '$previousSales',
+                  ],
+                },
+                100,
+              ],
+            },
+          },
+        },
+      },
     },
     {
       $project: {
         _id: 0,
-        customerId: '$_id',
-        repeatedTimes: 1,
-        name: {
-          $concat: [
-            '$customerDetails.first_name',
-            ' ',
-            '$customerDetails.last_name',
-          ],
-        },
-        firstPurchaseDate: 1,
-        lastPurchaseDate: 1,
+        month: '$_id',
+        totalSales: 1,
+        growthRate: 1,
       },
-    },
-    {
-      $sort: { repeatedTimes: -1 }, // Sort by number of purchases in descending order
     },
   ]);
 
@@ -124,5 +143,5 @@ const getCustomerPurchaseDetails = async () => {
 
 export const OrderService = {
   getOrders: getTotalSalesOverTime,
-  getSalesGrowthRateOverTime: getCustomerPurchaseDetails,
+  getSalesGrowthRateOverTime,
 };

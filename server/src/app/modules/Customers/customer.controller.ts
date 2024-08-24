@@ -4,8 +4,8 @@ import catchAsync from '../../utils/catchAsync';
 import { CustomerService } from './customer.service';
 
 const getCustomerAddedOverTime = catchAsync(async (req, res) => {
-  const result = await CustomerService.getNewCustomersOverTime();
-  console.log(result);
+  const result = await CustomerService.getNewCustomersOverTime(req.body);
+  console.log(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

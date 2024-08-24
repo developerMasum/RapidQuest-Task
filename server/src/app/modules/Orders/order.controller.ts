@@ -4,7 +4,7 @@ import catchAsync from '../../utils/catchAsync';
 import { OrderService } from './order.service';
 
 const getOrderData = catchAsync(async (req, res) => {
-  const result = await OrderService.getOrders();
+  const result = await OrderService.getOrders(req.body);
   console.log(result);
 
   sendResponse(res, {

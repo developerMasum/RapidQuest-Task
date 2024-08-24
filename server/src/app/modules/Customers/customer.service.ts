@@ -1,7 +1,7 @@
 import { shopifyOrder } from '../Orders/order.model';
 import { shopifyCustomers } from './customer.model';
 
-const getNewCustomersOverTime = async (interval = 'daily') => {
+const getNewCustomersOverTime = async ({ interval }: { interval: string }) => {
   let groupBy;
 
   // Determine the grouping interval
