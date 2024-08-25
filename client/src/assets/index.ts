@@ -1,12 +1,12 @@
 // assets.js
 import logo from "./images/logo.png";
-import home from "./images/home.png";
-import salesGrowth from "./images/salesgrowth.png";
-import customerGrowth from "./images/customergrowth.png";
+import home from "../assets/images/home.gif";
+import salesGrowth from "./images/economy.gif";
+import customerGrowth from "./images/growth.gif";
 import customerLifeTime from "./images/customer-lifetime-value.png";
-import repeatCustomer from "./images/repeatcustomer.png";
-import customerMap from "./images/geography.png";
-import saleRate from "./images/employee.png";
+import repeatCustomer from "./images/best-customer-experience.gif";
+import customerMap from "./images/worldwide.gif";
+import saleRate from "./images/chart.gif";
 import profile from "./images/profile.png";
 
 const assets = {

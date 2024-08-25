@@ -1,6 +1,6 @@
 import assets from "@/assets";
 
-export const App_Name = "EasyShop";
+export const App_Name = "RapidQuest";
 interface SideMenuItem {
   title: string;
   path: string;

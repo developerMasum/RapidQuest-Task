@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import { TextAlignCenterIcon } from "@radix-ui/react-icons";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import assets from "@/assets";
 import sideMenuItems, { App_Name } from "@/constants";
-
+import { Fade, Slide } from "react-awesome-reveal";
 const HomeLayout = () => {
   const [scrolled, setScrolled] = useState<boolean>(false);
 
@@ -28,22 +28,24 @@ const HomeLayout = () => {
       <div className="hidden border-r bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2 w-[280px] fixed">
           <div className="flex h-14 items-center border-b py-4 px-4 lg:h-[60px] lg:px-6">
-            <Link to="/" className="flex items-center gap-1 font-semibold">
-              <img
-                src={assets.images.logo}
-                width={40}
-                height={40}
-                alt={`${App_Name} logo`}
-                className="rounded-md mr-1"
-              />
-              <span className="text-[#898080]">{App_Name}</span>
-            </Link>
+            <Slide direction="left">
+              <Link to="/" className="flex items-center gap-1 font-semibold">
+                <img
+                  src={assets.images.logo}
+                  width={40}
+                  height={40}
+                  alt={`${App_Name} logo`}
+                  className="rounded-md mr-1"
+                />
+                <span className="text-[#898080]">{App_Name}</span>
+              </Link>
+            </Slide>
             <Button variant="link" size="icon" className="ml-auto h-8 w-8">
               <span className="sr-only">Toggle notifications</span>
             </Button>
           </div>
           <div className="flex-1 overflow-y-auto max-h-full">
-            <nav className="grid gap-0 text-lg font-medium">
+            <nav className="grid gap-0 text-lg font-medium font-mono">
               {sideMenuItems.map((item, index) =>
                 item.show ? (
                   <NavLink
@@ -68,7 +70,7 @@ const HomeLayout = () => {
                       />
                       {item.title}
                     </div>
-                    <ChevronRight />
+                    {/* <ChevronRight /> */}
                   </NavLink>
                 ) : null
               )}
@@ -144,18 +146,22 @@ const HomeLayout = () => {
               </nav>
             </SheetContent>
           </Sheet>
-          <p>Welcome To EasyShop Store</p>
 
-          <div className="flex items-center gap-1">
-            <img
-              src={assets.images.profile}
-              alt={App_Name}
-              width={40}
-              height={40}
-              className="rounded"
-            />
-            <ChevronDown size={32} color="#898080" />
-          </div>
+          <Fade cascade>
+            <p>Welcome To Chart Dashboard</p>
+          </Fade>
+
+          <Slide direction="left">
+            <div className="flex items-center gap-1">
+              <img
+                src={assets.images.profile}
+                alt={App_Name}
+                width={40}
+                height={40}
+                className="rounded"
+              />
+            </div>
+          </Slide>
         </header>
 
         <main className="flex-1  p-4 px-4 lg:px-6 mt-12">
