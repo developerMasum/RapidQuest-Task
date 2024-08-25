@@ -1,12 +1,5 @@
-import SalesOverView from "../Test/Test";
-
 const Home = () => {
-  return (
-    <div>
-      home
-      <SalesOverView />
-    </div>
-  );
+  return <div>Welcome To Chart Dashboard</div>;
 };
 
 export default Home;
