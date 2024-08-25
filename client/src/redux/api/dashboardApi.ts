@@ -31,6 +31,13 @@ export const dashboardApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.user],
     }),
+    getCustomerGeography: build.query({
+      query: () => ({
+        url: "/customers/location",
+        method: "GET",
+      }),
+      providesTags: [tagTypes.user],
+    }),
   }),
 });
 
@@ -39,4 +46,5 @@ export const {
   useGetSellsGrowthRateQuery,
   useGetCustomerGrowthOverTimeQuery,
   useGetRepeatingCustomersQuery,
+  useGetCustomerGeographyQuery,
 } = dashboardApi;

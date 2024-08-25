@@ -65,21 +65,26 @@ const SalesOverView: React.FC = () => {
   if (error) return <p>Error loading data!</p>;
 
   return (
-    <div>
-      <h1>Sales Data</h1>
-      <select
-        value={view}
-        onChange={(e) =>
-          setView(
-            e.target.value as "daily" | "monthly" | "quarterly" | "yearly"
-          )
-        }
-      >
-        <option value="daily">Daily</option>
-        <option value="monthly">Monthly</option>
-        <option value="quarterly">Quarterly</option>
-        <option value="yearly">Yearly</option>
-      </select>
+    <div className="">
+      <p className="text-2xl font-semibold text-center text-gray-700">
+        Total Sales Over Time
+      </p>
+      <div className="flex justify-start">
+        <select
+          value={view}
+          onChange={(e) =>
+            setView(
+              e.target.value as "daily" | "monthly" | "quarterly" | "yearly"
+            )
+          }
+          className="w-48 p-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out"
+        >
+          <option value="daily">Daily</option>
+          <option value="monthly">Monthly</option>
+          <option value="quarterly">Quarterly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+      </div>
 
       <Bar data={chartData} options={chartOptions} />
     </div>

@@ -1,90 +1,62 @@
-// import React, { useEffect, useState } from "react";
-// import Highcharts from "highcharts";
-// import HighchartsReact from "highcharts-react-official";
-// import HighchartsMap from "highcharts/modules/map";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import Loader from "@/lib/Loader";
+import { useGetCustomerGeographyQuery } from "@/redux/api/dashboardApi";
+import Latitudes from "@/types/Lattitudes";
 
-// HighchartsMap(Highcharts);
+const customIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // A sample icon, you can change it
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
-// const CustomerGeography = () => {
-//   const [mapOptions, setMapOptions] = useState(null);
+interface GeoData {
+  _id: string;
+  totalCustomers: number;
+}
 
-//   useEffect(() => {
-//     const fetchCustomerData = async () => {
-//       const customerResponse = await fetch(
-//         "http://localhost:5000/api/customers/location"
-//       );
-//       const customerData = await customerResponse.json();
-//       console.log(customerData);
+const CustomerMap = () => {
+  const { data: geoData, error, isLoading } = useGetCustomerGeographyQuery({});
 
-//       const mapData = customerData?.data?.map((location) => ({
-//         code3: location._id,
-//         value: location.totalCustomers,
-//       }));
+  if (isLoading) return <Loader />;
+  if (error) return <p>Error loading data!</p>;
+  if (!geoData || !geoData.data.length) return <p>No data available!</p>;
 
-//       const topologyResponse = await fetch(
-//         "https://code.highcharts.com/mapdata/custom/world.topo.json"
-//       );
-//       const topology = await topologyResponse.json();
-//       console.log(topology);
+  const defaultCenter = geoData.data.length
+    ? Latitudes[geoData.data[0]._id] || { lat: 23.685, lng: 90.3563 }
+    : { lat: 23.685, lng: 90.3563 };
 
-//       setMapOptions({
-//         chart: {
-//           map: topology,
-//         },
-//         title: {
-//           text: "Geographical Distribution of Customers",
-//         },
-//         mapNavigation: {
-//           enabled: true,
-//           enableDoubleClickZoomTo: true,
-//         },
-//         colorAxis: {
-//           min: 0,
-//           stops: [
-//             [0, "#EFEFFF"],
-//             [0.5, "#4444FF"],
-//             [1, "#000022"],
-//           ],
-//         },
-//         series: [
-//           {
-//             data: mapData,
-//             mapData: topology,
-//             joinBy: ["iso-a3", "code3"],
-//             name: "Total Customers",
-//             states: {
-//               hover: {
-//                 color: "#BADA55",
-//               },
-//             },
-//             tooltip: {
-//               pointFormat: "{point.name}: {point.value} customers",
-//             },
-//           },
-//         ],
-//       });
-//     };
+  return (
+    <div className="h-[80vh] w-full mx-auto p-2 md:p-4 space-y-4">
+      <h1 className="text-xl md:text-2xl font-semibold text-gray-600 text-center">
+        Customer Geography
+      </h1>
+      <MapContainer
+        center={[defaultCenter.lat, defaultCenter.lng]}
+        zoom={7}
+        className="h-[70vh] md:h-full rounded-sm"
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
 
-//     fetchCustomerData();
-//   }, []);
-
-//   if (!mapOptions) return <div>Loading...</div>;
-
-//   return (
-//     <div>
-//       <HighchartsReact
-//         highcharts={Highcharts}
-//         options={mapOptions}
-//         constructorType={"mapChart"}
-//       />
-//     </div>
-//   );
-// };
-
-// export default CustomerGeography;
-
-const CustomerGeography = () => {
-  return <div>CustomerGeography</div>;
+        {geoData.data.map((item: GeoData) => {
+          const coordinates = Latitudes[item._id];
+          if (!coordinates) return null;
+          return (
+            <Marker key={item._id} position={coordinates} icon={customIcon}>
+              <Popup>
+                {item._id}: {item.totalCustomers} customers
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
+  );
 };
 
-export default CustomerGeography;
+export default CustomerMap;

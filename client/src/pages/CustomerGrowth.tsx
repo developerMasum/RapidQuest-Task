@@ -32,9 +32,9 @@ interface CustomerGrowthData {
 }
 
 const CustomerGrowth: React.FC = () => {
-  const [interval, setInterval] = useState<"daily" | "monthly" | "yearly">(
-    "monthly"
-  );
+  const [interval, setInterval] = useState<
+    "daily" | "monthly" | "quarterly" | "yearly"
+  >("monthly");
   const {
     data: chartData = [],
     error,
@@ -82,22 +82,26 @@ const CustomerGrowth: React.FC = () => {
   };
 
   const handleIntervalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setInterval(e.target.value as "daily" | "monthly" | "yearly");
+    setInterval(e.target.value as "daily" | "monthly" | "quarterly" | "yearly");
   };
 
   return (
     <div>
-      <h1>Customer Growth Over Time</h1>
-      <label htmlFor="interval-select">Select Interval: </label>
-      <select
-        id="interval-select"
-        value={interval}
-        onChange={handleIntervalChange}
-      >
-        <option value="daily">Daily</option>
-        <option value="monthly">Monthly</option>
-        <option value="yearly">Yearly</option>
-      </select>
+      <p className="text-2xl font-semibold text-center text-gray-700">
+        Customer Growth Over Time
+      </p>
+      <div className="flex justify-start">
+        <select
+          value={interval}
+          onChange={handleIntervalChange}
+          className="w-48 p-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out"
+        >
+          <option value="daily">Daily</option>
+          <option value="monthly">Monthly</option>
+          <option value="quarterly">Quarterly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+      </div>
       <Line data={data} options={options} />
     </div>
   );
