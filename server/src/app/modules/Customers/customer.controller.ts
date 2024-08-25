@@ -16,7 +16,8 @@ const getCustomerAddedOverTime = catchAsync(async (req, res) => {
   });
 });
 const getNumberOfRepeatCustomers = catchAsync(async (req, res) => {
-  const result = await CustomerService.getNumberOfRepeatCustomers();
+  const { interval } = req.query as { interval: string };
+  const result = await CustomerService.getNumberOfRepeatCustomers({ interval });
   console.log(result);
 
   sendResponse(res, {

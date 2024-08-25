@@ -81,20 +81,90 @@ const getNewCustomersOverTime = async ({ interval }: { interval: string }) => {
   return result;
 };
 //   ----------------------------------------------------------------------------------------{TODO}
-const getCustomerPurchaseDetails = async () => {
+const getNumberOfRepeatCustomersOverTime = async ({
+  interval,
+}: {
+  interval: string;
+}) => {
+  let groupBy;
+
+  // Determine the grouping interval
+  switch (interval) {
+    case 'daily':
+      groupBy = {
+        $dateToString: {
+          format: '%Y-%m-%d',
+          date: { $dateFromString: { dateString: '$created_at' } },
+        },
+      };
+      break;
+    case 'monthly':
+      groupBy = {
+        $dateToString: {
+          format: '%Y-%m',
+          date: { $dateFromString: { dateString: '$created_at' } },
+        },
+      };
+      break;
+    case 'quarterly':
+      groupBy = {
+        $concat: [
+          {
+            $substr: [
+              { $year: { $dateFromString: { dateString: '$created_at' } } },
+              0,
+              4,
+            ],
+          },
+          '-Q',
+          {
+            $toString: {
+              $ceil: {
+                $divide: [
+                  {
+                    $month: { $dateFromString: { dateString: '$created_at' } },
+                  },
+                  3,
+                ],
+              },
+            },
+          },
+        ],
+      };
+      break;
+    case 'yearly':
+      groupBy = {
+        $dateToString: {
+          format: '%Y',
+          date: { $dateFromString: { dateString: '$created_at' } },
+        },
+      };
+      break;
+    default:
+      throw new Error('Invalid interval specified');
+  }
+
   const result = await shopifyOrder.aggregate([
     {
       $group: {
-        _id: '$customer.id',
+        _id: {
+          customerId: '$customer.id',
+          interval: groupBy,
+        },
         repeatedTimes: { $sum: 1 },
         firstPurchaseDate: { $min: '$created_at' },
         lastPurchaseDate: { $max: '$created_at' },
       },
     },
     {
+      $match: {
+        repeatedTimes: { $gt: 1 },
+      },
+    },
+    {
       $lookup: {
         from: 'shopifyCustomers',
-        localField: '_id',
+        localField: '_id.customerId',
         foreignField: 'id',
         as: 'customerDetails',
       },
@@ -105,7 +175,8 @@ const getCustomerPurchaseDetails = async () => {
     {
       $project: {
         _id: 0,
-        customerId: '$_id',
+        customerId: '$_id.customerId',
+        interval: '$_id.interval',
         repeatedTimes: 1,
         name: {
           $concat: [
@@ -119,7 +190,14 @@ const getCustomerPurchaseDetails = async () => {
       },
     },
     {
-      $sort: { repeatedTimes: -1 }, // Sort by number of purchases in descending order
+      $group: {
+        _id: '$interval',
+        repeatCustomersCount: { $sum: 1 }, // Count the number of repeat customers per interval
+        customerNames: { $push: '$name' }, // Collect customer names into an array
+      },
+    },
+    {
+      $sort: { _id: 1 }, // Sort by the grouping field (e.g., date)
     },
   ]);
 
@@ -223,7 +301,7 @@ const getCustomerLifetimeValueByCohorts = async () => {
 
 export const CustomerService = {
   getNewCustomersOverTime,
-  getNumberOfRepeatCustomers: getCustomerPurchaseDetails,
+  getNumberOfRepeatCustomers: getNumberOfRepeatCustomersOverTime,
   getGeographicalDistribution,
   getCustomerLifetimeValueByCohorts,
 };
