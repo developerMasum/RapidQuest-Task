@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,8 +9,13 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
+  ChartData,
 } from "chart.js";
+import { useGetCustomerGrowthOverTimeQuery } from "@/redux/api/dashboardApi";
+import Loader from "@/lib/Loader";
 
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,46 +32,42 @@ interface CustomerGrowthData {
 }
 
 const CustomerGrowth: React.FC = () => {
-  const [interval, setInterval] = useState<string>("monthly");
-  const [chartData, setChartData] = useState<CustomerGrowthData[]>([]);
+  const [interval, setInterval] = useState<"daily" | "monthly" | "yearly">(
+    "monthly"
+  );
+  const {
+    data: chartData = [],
+    error,
+    isLoading,
+  } = useGetCustomerGrowthOverTimeQuery(interval);
 
-  useEffect(() => {
-    fetchGrowthData(interval);
-  }, [interval]);
+  if (isLoading) return <Loader />;
+  if (error) return <p>Error loading data!</p>;
 
-  const fetchGrowthData = async (interval: string) => {
-    try {
-      const response = await axios.get<{ data: CustomerGrowthData[] }>(
-        `http://localhost:5000/api/customers?interval=${interval}`
-      );
-      setChartData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching growth data:", error);
-    }
-  };
+  // Ensure chartData is correctly typed and accessed
+  const labels = chartData?.data?.map((item: CustomerGrowthData) => item._id);
+  const dataValues = chartData?.data?.map(
+    (item: CustomerGrowthData) => item.totalNewCustomers
+  );
 
-  const handleIntervalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setInterval(e.target.value);
-  };
-
-  const data = {
-    labels: chartData.map((item) => item._id),
+  const data: ChartData<"line"> = {
+    labels,
     datasets: [
       {
         label: "New Customers",
-        data: chartData.map((item) => item.totalNewCustomers),
+        data: dataValues,
         borderColor: "rgba(255, 99, 132, 1)",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 10,
         fill: false,
-        cubicInterpolationMode: "monotone" as const,
+        cubicInterpolationMode: "monotone",
       },
     ],
   };
 
-  const options = {
+  const options: ChartOptions<"line"> = {
     scales: {
       y: {
         beginAtZero: true,
@@ -76,9 +76,13 @@ const CustomerGrowth: React.FC = () => {
     elements: {
       line: {
         tension: 0.4,
-        cubicInterpolationMode: "monotone" as const,
+        cubicInterpolationMode: "monotone",
       },
     },
+  };
+
+  const handleIntervalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setInterval(e.target.value as "daily" | "monthly" | "yearly");
   };
 
   return (

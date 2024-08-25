@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,7 +10,11 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
+  ChartData,
 } from "chart.js";
+import { useGetSellsGrowthRateQuery } from "@/redux/api/dashboardApi";
+import Loader from "@/lib/Loader";
 
 // Register Chart.js components
 ChartJS.register(
@@ -24,66 +28,48 @@ ChartJS.register(
 );
 
 const SellsGrowthRate: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [chartData, setChartData] = useState<any[]>([]);
+  const { data: chartData, error, isLoading } = useGetSellsGrowthRateQuery({});
 
-  useEffect(() => {
-    const fetchGrowthData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/orders/growth"
-        );
-        setChartData(response.data.data); // Assuming `data.data` holds the array of growth data
-      } catch (error) {
-        console.error("Error fetching growth data:", error);
-      }
-    };
+  if (isLoading) return <Loader />;
+  if (error) return <p>Error loading data!</p>;
 
-    fetchGrowthData();
-  }, []);
+  // Ensure data is correctly structured
+  const labels = chartData?.data?.map((item: any) => item.month) || [];
+  const growthRates =
+    chartData?.data?.map((item: any) => item.growthRate || 0) || [];
 
-  const data = {
-    labels: chartData.map((item) => item.month),
+  const data: ChartData<"line"> = {
+    labels,
     datasets: [
-      // {
-      //   label: "Total Sales",
-      //   data: chartData.map((item) => item.totalSales),
-      //   borderColor: "rgba(75, 192, 192, 1)", // teal color
-      //   backgroundColor: "rgba(75, 192, 192, 0.2)", // transparent teal color
-      //   pointStyle: "rectRounded",
-      //   pointRadius: 10,
-      //   pointHoverRadius: 15,
-      //   fill: false, // Ensure no fill for the line chart
-      // },
       {
         label: "Growth Rate",
-        data: chartData.map((item) => item.growthRate || 0), // Handle null values
-        borderColor: "rgba(255, 99, 132, 1)", // red color
-        backgroundColor: "rgba(255, 99, 132, 0.2)", // transparent red color
+        data: growthRates,
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
         pointStyle: "rectRounded",
         pointRadius: 10,
         pointHoverRadius: 15,
-        fill: false, // Ensure no fill for the line chart
-        yAxisID: "y-axis-2",
+        fill: false,
+        yAxisID: "y-axis-1",
       },
     ],
   };
 
-  const options = {
+  const options: ChartOptions<"line"> = {
     scales: {
       y: {
         beginAtZero: true,
-        position: "left" as const, // Explicitly typing the position as 'left'
+        position: "left",
       },
-      "y-axis-2": {
+      "y-axis-1": {
         beginAtZero: true,
-        position: "right" as const, // Explicitly typing the position as 'right'
+        position: "right",
       },
     },
     elements: {
       line: {
-        tension: 0.4, // Adds a slight curve to the line
-        cubicInterpolationMode: "monotone" as const, // Ensures no overshoot and smooth interpolation
+        tension: 0.4,
+        cubicInterpolationMode: "monotone",
       },
     },
   };

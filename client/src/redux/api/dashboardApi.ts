@@ -5,7 +5,28 @@ export const dashboardApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getSellsOverTime: build.query({
       query: (view) => ({
-        url: `/orders?interval=${view}`, // Assuming the backend accepts a 'view' query parameter
+        url: `/orders?interval=${view}`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.user],
+    }),
+    getSellsGrowthRate: build.query({
+      query: () => ({
+        url: "/orders/growth",
+        method: "GET",
+      }),
+      providesTags: [tagTypes.user],
+    }),
+    getCustomerGrowthOverTime: build.query({
+      query: (view) => ({
+        url: `/customers?interval=${view}`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.user],
+    }),
+    getRepeatingCustomers: build.query({
+      query: (view) => ({
+        url: `/customers/repeat?interval=${view}`,
         method: "GET",
       }),
       providesTags: [tagTypes.user],
@@ -13,4 +34,9 @@ export const dashboardApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetSellsOverTimeQuery } = dashboardApi;
+export const {
+  useGetSellsOverTimeQuery,
+  useGetSellsGrowthRateQuery,
+  useGetCustomerGrowthOverTimeQuery,
+  useGetRepeatingCustomersQuery,
+} = dashboardApi;
