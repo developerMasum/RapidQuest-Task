@@ -12,7 +12,6 @@ import {
   Legend,
 } from "chart.js";
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -23,9 +22,8 @@ ChartJS.register(
   Legend
 );
 
-// Define the type for the customer growth data
 interface CustomerGrowthData {
-  _id: string; // Assuming `_id` is a string representing the date or period
+  _id: string;
   totalNewCustomers: number;
 }
 
@@ -53,18 +51,18 @@ const CustomerGrowth: React.FC = () => {
   };
 
   const data = {
-    labels: chartData.map((item) => item._id), // Assuming `_id` represents the label (e.g., month, day, etc.)
+    labels: chartData.map((item) => item._id),
     datasets: [
       {
         label: "New Customers",
         data: chartData.map((item) => item.totalNewCustomers),
-        borderColor: "rgba(255, 99, 132, 1)", // red color
-        backgroundColor: "rgba(255, 99, 132, 0.2)", // transparent red color
-        cubicInterpolationMode: "monotone",
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 10,
         fill: false,
+        cubicInterpolationMode: "monotone" as const,
       },
     ],
   };
@@ -77,8 +75,8 @@ const CustomerGrowth: React.FC = () => {
     },
     elements: {
       line: {
-        tension: 0.4, // Adds a slight curve to the line
-        cubicInterpolationMode: "monotone", // Ensures no overshoot and smooth interpolation
+        tension: 0.4,
+        cubicInterpolationMode: "monotone" as const,
       },
     },
   };

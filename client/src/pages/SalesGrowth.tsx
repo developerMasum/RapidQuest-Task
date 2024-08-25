@@ -24,6 +24,7 @@ ChartJS.register(
 );
 
 const SellsGrowthRate: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -44,15 +45,16 @@ const SellsGrowthRate: React.FC = () => {
   const data = {
     labels: chartData.map((item) => item.month),
     datasets: [
-      {
-        label: "Total Sales",
-        data: chartData.map((item) => item.totalSales),
-        borderColor: "rgba(75, 192, 192, 1)", // teal color
-        backgroundColor: "rgba(75, 192, 192, 0.2)", // transparent teal color
-        pointStyle: "rectRounded",
-        pointRadius: 10,
-        pointHoverRadius: 15,
-      },
+      // {
+      //   label: "Total Sales",
+      //   data: chartData.map((item) => item.totalSales),
+      //   borderColor: "rgba(75, 192, 192, 1)", // teal color
+      //   backgroundColor: "rgba(75, 192, 192, 0.2)", // transparent teal color
+      //   pointStyle: "rectRounded",
+      //   pointRadius: 10,
+      //   pointHoverRadius: 15,
+      //   fill: false, // Ensure no fill for the line chart
+      // },
       {
         label: "Growth Rate",
         data: chartData.map((item) => item.growthRate || 0), // Handle null values
@@ -61,6 +63,8 @@ const SellsGrowthRate: React.FC = () => {
         pointStyle: "rectRounded",
         pointRadius: 10,
         pointHoverRadius: 15,
+        fill: false, // Ensure no fill for the line chart
+        yAxisID: "y-axis-2",
       },
     ],
   };
@@ -69,12 +73,17 @@ const SellsGrowthRate: React.FC = () => {
     scales: {
       y: {
         beginAtZero: true,
+        position: "left" as const, // Explicitly typing the position as 'left'
+      },
+      "y-axis-2": {
+        beginAtZero: true,
+        position: "right" as const, // Explicitly typing the position as 'right'
       },
     },
     elements: {
       line: {
         tension: 0.4, // Adds a slight curve to the line
-        cubicInterpolationMode: "monotone", // Ensures no overshoot and smooth interpolation
+        cubicInterpolationMode: "monotone" as const, // Ensures no overshoot and smooth interpolation
       },
     },
   };
