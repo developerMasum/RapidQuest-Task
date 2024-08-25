@@ -1,5 +1,12 @@
+import SalesOverView from "../Test/Test";
+
 const Home = () => {
-  return <div>home</div>;
+  return (
+    <div>
+      home
+      <SalesOverView />
+    </div>
+  );
 };
 
 export default Home;
