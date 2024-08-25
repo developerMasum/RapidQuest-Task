@@ -1,85 +1,162 @@
-import React from "react";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartData,
+  ChartOptions,
+} from "chart.js";
+import { useGetCorotLifeTimeValuesQuery } from "@/redux/api/dashboardApi";
+import Loader from "@/lib/Loader";
 
-// Define the data structure for cohort data
-interface CohortData {
-  _id: string; // e.g., "2022-01"
-  totalCLV: number; // Total Customer Lifetime Value for the cohort
-  customerCount: number; // Number of customers in the cohort
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+interface CLVData {
+  _id: string;
+  cohort: string;
+  customerCount: number;
+  totalCLV: number;
 }
 
-// Static data for cohorts
-const cohortData: CohortData[] = [
-  { _id: "2022-01", totalCLV: 628226.5, customerCount: 114 },
-  { _id: "2022-02", totalCLV: 530000.0, customerCount: 95 },
-  { _id: "2022-03", totalCLV: 490000.0, customerCount: 120 },
-  { _id: "2022-04", totalCLV: 600000.0, customerCount: 130 },
-  { _id: "2022-05", totalCLV: 620000.0, customerCount: 110 },
-  { _id: "2022-06", totalCLV: 570000.0, customerCount: 125 },
-];
+const CohortLifetimeValue: React.FC = () => {
+  const {
+    data: clvData,
+    error,
+    isLoading,
+  } = useGetCorotLifeTimeValuesQuery({});
+  console.log(clvData);
 
-const CohortAnalysisTable: React.FC = () => {
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600">
+        Error loading data. Please try again later.
+      </div>
+    );
+  }
+
+  const labels: string[] = clvData?.data.map((item: CLVData) => item._id);
+  const customerCounts: number[] = clvData?.data.map(
+    (item: CLVData) => item.customerCount
+  );
+  const totalLifetimeValues: number[] = clvData.data.map(
+    (item: CLVData) => item.totalCLV
+  );
+
+  const data: ChartData<"bar"> = {
+    labels,
+    datasets: [
+      {
+        label: "Customer Count",
+        data: customerCounts,
+        backgroundColor: "rgba(54, 162, 235, 0.7)", // Semi-transparent blue
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1,
+        yAxisID: "y1",
+      },
+      {
+        label: "Total Lifetime Value",
+        data: totalLifetimeValues,
+        backgroundColor: "rgba(255, 99, 132, 0.7)", // Semi-transparent red
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+        yAxisID: "y2",
+      },
+    ],
+  };
+
+  const options: ChartOptions<"bar"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y1: {
+        type: "linear",
+        position: "left",
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Customer Count",
+          font: {
+            size: 14,
+          },
+        },
+      },
+      y2: {
+        type: "linear",
+        position: "right",
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Total Lifetime Value ($)",
+          font: {
+            size: 14,
+          },
+        },
+
+        grid: {
+          drawOnChartArea: false,
+        },
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: "Customer Lifetime Value by Cohorts",
+        font: {
+          size: 18,
+        },
+        padding: {
+          top: 20,
+          bottom: 30,
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.dataset.label || "";
+            const value = context.raw || 0;
+            if (label === "Total Lifetime Value") {
+              return `${label}: $${value.toLocaleString()}`;
+            }
+            return `${label}: ${value.toLocaleString()}`;
+          },
+        },
+      },
+      legend: {
+        position: "top",
+        labels: {
+          padding: 20,
+        },
+      },
+    },
+    interaction: {
+      mode: "index",
+      intersect: false,
+    },
+  };
+
   return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        padding: "20px",
-        maxWidth: "800px",
-        margin: "auto",
-      }}
-    >
-      <h2>Cohort Analysis Table</h2>
-      <table
-        style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}
-      >
-        <thead>
-          <tr>
-            <th
-              style={{
-                borderBottom: "2px solid #ddd",
-                padding: "8px",
-                textAlign: "left",
-              }}
-            >
-              Date
-            </th>
-            <th
-              style={{
-                borderBottom: "2px solid #ddd",
-                padding: "8px",
-                textAlign: "left",
-              }}
-            >
-              Customer Count
-            </th>
-            <th
-              style={{
-                borderBottom: "2px solid #ddd",
-                padding: "8px",
-                textAlign: "left",
-              }}
-            >
-              Total CLV
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {cohortData.map((cohort) => (
-            <tr key={cohort._id}>
-              <td style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>
-                {cohort._id}
-              </td>
-              <td style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>
-                {cohort.customerCount}
-              </td>
-              <td style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>
-                ${cohort.totalCLV.toLocaleString()}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="w-full lg:w-[80%] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative h-[300px] sm:h-[400px] lg:h-[500px]">
+        <Bar data={data} options={options} />
+      </div>
     </div>
   );
 };
 
-export default CohortAnalysisTable;
+export default CohortLifetimeValue;

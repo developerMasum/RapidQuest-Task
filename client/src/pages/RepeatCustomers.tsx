@@ -12,7 +12,6 @@ import {
   Legend,
 } from "chart.js";
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -35,7 +34,6 @@ const RepeatCustomers: React.FC = () => {
   >("monthly");
 
   useEffect(() => {
-    // Fetch data from the API
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -44,7 +42,7 @@ const RepeatCustomers: React.FC = () => {
             params: { interval: view },
           }
         );
-        console.log(response);
+        // console.log(response);
         setData(response.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -52,9 +50,8 @@ const RepeatCustomers: React.FC = () => {
     };
 
     fetchData();
-  }, [view]); // Fetch data whenever `view` changes
+  }, [view]);
 
-  // Prepare data for Chart.js
   const chartData = {
     labels: data.map((item) => `${item._id}`),
     datasets: [

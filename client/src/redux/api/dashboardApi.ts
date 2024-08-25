@@ -38,6 +38,13 @@ export const dashboardApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.user],
     }),
+    getCorotLifeTimeValues: build.query({
+      query: () => ({
+        url: "/customers/cohort",
+        method: "GET",
+      }),
+      providesTags: [tagTypes.user],
+    }),
   }),
 });
 
@@ -47,4 +54,5 @@ export const {
   useGetCustomerGrowthOverTimeQuery,
   useGetRepeatingCustomersQuery,
   useGetCustomerGeographyQuery,
+  useGetCorotLifeTimeValuesQuery,
 } = dashboardApi;
