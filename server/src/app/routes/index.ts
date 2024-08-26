@@ -2,8 +2,6 @@ import { customerRoute } from '../modules/Customers/customer.route';
 import { orderRoute } from './../modules/Orders/order.route';
 import { Router } from 'express';
 
-// import { ProductsRoutes } from '../modules/products/product.route';
-
 const router = Router();
 
 const moduleRoutes = [

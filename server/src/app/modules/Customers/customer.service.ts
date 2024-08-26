@@ -4,7 +4,6 @@ import { shopifyCustomers } from './customer.model';
 const getNewCustomersOverTime = async ({ interval }: { interval: string }) => {
   let groupBy;
 
-  // Determine the grouping interval
   switch (interval) {
     case 'daily':
       groupBy = {
@@ -74,13 +73,13 @@ const getNewCustomersOverTime = async ({ interval }: { interval: string }) => {
       },
     },
     {
-      $sort: { _id: 1 }, // Sort by the grouping field (e.g., date)
+      $sort: { _id: 1 },
     },
   ]);
 
   return result;
 };
-//   ----------------------------------------------------------------------------------------{TODO}
+
 const getNumberOfRepeatCustomersOverTime = async ({
   interval,
 }: {
@@ -88,7 +87,6 @@ const getNumberOfRepeatCustomersOverTime = async ({
 }) => {
   let groupBy;
 
-  // Determine the grouping interval
   switch (interval) {
     case 'daily':
       groupBy = {
@@ -192,19 +190,18 @@ const getNumberOfRepeatCustomersOverTime = async ({
     {
       $group: {
         _id: '$interval',
-        repeatCustomersCount: { $sum: 1 }, // Count the number of repeat customers per interval
-        customerNames: { $push: '$name' }, // Collect customer names into an array
+        repeatCustomersCount: { $sum: 1 },
+        customerNames: { $push: '$name' },
       },
     },
     {
-      $sort: { _id: 1 }, // Sort by the grouping field (e.g., date)
+      $sort: { _id: 1 },
     },
   ]);
 
   return result;
 };
 
-// ------------------------------------------------------------------------------------------
 const getGeographicalDistribution = async () => {
   const result = await shopifyCustomers.aggregate([
     {
@@ -221,11 +218,7 @@ const getGeographicalDistribution = async () => {
   return result;
 };
 
-// ------------------------------------------------------------------------------------------{check-again}
-
 const getCustomerLifetimeValueByCohorts = async () => {
-  // Step 1: Get the first purchase month for each customer
-
   const customerFirstPurchase = await shopifyOrder.aggregate([
     {
       $match: {
@@ -234,7 +227,7 @@ const getCustomerLifetimeValueByCohorts = async () => {
     },
     {
       $addFields: {
-        created_at: { $toDate: '$created_at' }, // Convert to date
+        created_at: { $toDate: '$created_at' },
       },
     },
     {
@@ -247,13 +240,11 @@ const getCustomerLifetimeValueByCohorts = async () => {
     },
   ]);
 
-  // Step 2: Create a map of customer ID to their first purchase month
   const customerFirstPurchaseMap: Record<string, string> = {};
   customerFirstPurchase.forEach((record) => {
     customerFirstPurchaseMap[record._id] = record.firstPurchaseMonth;
   });
 
-  // Step 3: Calculate CLV for each cohort based on the first purchase month
   const result = await shopifyOrder.aggregate([
     {
       $match: {
@@ -262,7 +253,7 @@ const getCustomerLifetimeValueByCohorts = async () => {
     },
     {
       $addFields: {
-        created_at: { $toDate: '$created_at' }, // Convert to date
+        created_at: { $toDate: '$created_at' },
         firstPurchaseMonth: {
           $let: {
             vars: {
@@ -292,7 +283,7 @@ const getCustomerLifetimeValueByCohorts = async () => {
       },
     },
     {
-      $sort: { _id: 1 }, // Sort by cohort month
+      $sort: { _id: 1 },
     },
   ]);
 

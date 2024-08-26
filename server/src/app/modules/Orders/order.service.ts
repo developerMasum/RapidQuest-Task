@@ -1,10 +1,8 @@
 import { shopifyOrder } from './order.model';
 
 const getTotalSalesOverTime = async ({ interval }: { interval: string }) => {
-  // console.log(sendData);
   let groupBy;
-  // const interval = 'daily';
-  // Determine the grouping interval
+
   switch (interval) {
     case 'daily':
       groupBy = {
@@ -71,7 +69,7 @@ const getTotalSalesOverTime = async ({ interval }: { interval: string }) => {
       },
     },
     {
-      $sort: { _id: 1 }, // Sort by the grouping field (e.g., date)
+      $sort: { _id: 1 },
     },
   ]);
 
@@ -84,7 +82,7 @@ const getSalesGrowthRateOverTime = async () => {
       $addFields: {
         purchaseMonth: {
           $dateToString: { format: '%Y-%m', date: { $toDate: '$created_at' } },
-        }, // Extract year-month from created_at
+        },
       },
     },
     {
@@ -96,14 +94,14 @@ const getSalesGrowthRateOverTime = async () => {
       },
     },
     {
-      $sort: { _id: 1 }, // Sort by month in ascending order
+      $sort: { _id: 1 },
     },
     {
       $setWindowFields: {
         sortBy: { _id: 1 },
         output: {
           previousSales: {
-            $shift: { output: '$totalSales', by: -1 }, // Get previous month's sales
+            $shift: { output: '$totalSales', by: -1 },
           },
         },
       },

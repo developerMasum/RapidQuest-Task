@@ -37,7 +37,7 @@ const RepeatCustomers: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/customers/repeat",
+          "https://rapid-quist-task.vercel.app/api/customers/repeat",
           {
             params: { interval: view },
           }

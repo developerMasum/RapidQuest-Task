@@ -4,7 +4,7 @@ import { tagTypesList } from "../tag-types";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api",
+    baseUrl: "https://rapid-quist-task.vercel.app/api",
   }),
   endpoints: () => ({}),
   tagTypes: tagTypesList,

@@ -6,7 +6,6 @@ import { OrderService } from './order.service';
 const getOrderData = catchAsync(async (req, res) => {
   const { interval } = req.query as { interval: string };
   const result = await OrderService.getOrders({ interval });
-  console.log(interval);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -18,7 +17,6 @@ const getOrderData = catchAsync(async (req, res) => {
 
 const getSalesGrowthRateOverTime = catchAsync(async (req, res) => {
   const result = await OrderService.getSalesGrowthRateOverTime();
-  console.log(result);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

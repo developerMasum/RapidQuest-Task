@@ -20,7 +20,7 @@ const addressSchema = new Schema(
     country_name: String,
     default: { type: Boolean, default: false },
   },
-  { _id: false }, // Disable the automatic _id creation for subdocuments
+  { _id: false },
 );
 
 const emailMarketingConsentSchema = new Schema(
@@ -52,7 +52,7 @@ const shopifyCustomerSchema = new Schema(
     tags: String,
     currency: String,
     phone: String,
-    sms_marketing_consent: { type: Schema.Types.Mixed }, // Assuming it's an object or can be null
+    sms_marketing_consent: { type: Schema.Types.Mixed },
     email_marketing_consent: emailMarketingConsentSchema,
     tax_exempt: { type: Boolean, default: false },
     tax_exemptions: [String],

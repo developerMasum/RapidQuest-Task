@@ -7,7 +7,6 @@ const shopifyOrderSchema = new Schema(
     total_price: String,
     created_at: Date,
     updated_at: Date,
-    // Add other fields as necessary
   },
   { collection: 'shopifyOrders' },
 );
