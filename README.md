@@ -2,6 +2,10 @@
 
 This project is a full stack web application built to analyze e-commerce data from a sample Shopify store stored in MongoDB. The application provides a set of APIs to serve data for visualization on the frontend, enabling users to view various metrics and trends related to sales, customers, and geographic distribution.
 
+## Live URL
+
+[Rapid Quest ](https://rapid-quest-task-aug.vercel.app/)
+
 ## Features
 
 - **Total Sales Over Time**: Visualizes sales data aggregated by daily, monthly, quarterly, and yearly intervals.
@@ -24,7 +28,7 @@ This project is a full stack web application built to analyze e-commerce data fr
 - **Leaflet.js**: For visualizing the geographical distribution of customers on a map.
 
 ### Deployment
-- **Vercel** / **Heroku** / **Netlify**: For hosting the frontend and backend.
+- **Vercel**: For hosting the frontend and backend.
 
 ## API Endpoints
 
@@ -86,5 +90,8 @@ PORT=5000
 
 ```
 
+## 🔗 Visit My Profile Links
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://portfolio-masum-fullstack.vercel.app)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mdmasumdev)
 
 
