@@ -6,7 +6,7 @@ import { useGetCustomerGeographyQuery } from "@/redux/api/dashboardApi";
 import Latitudes from "@/types/Lattitudes";
 
 const customIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // A sample icon, you can change it
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],

@@ -13,7 +13,6 @@ import {
 import { useGetCorotLifeTimeValuesQuery } from "@/redux/api/dashboardApi";
 import Loader from "@/lib/Loader";
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -64,7 +63,7 @@ const CohortLifetimeValue: React.FC = () => {
       {
         label: "Customer Count",
         data: customerCounts,
-        backgroundColor: "rgba(54, 162, 235, 0.7)", // Semi-transparent blue
+        backgroundColor: "rgba(54, 162, 235, 0.7)",
         borderColor: "rgba(54, 162, 235, 1)",
         borderWidth: 1,
         yAxisID: "y1",
@@ -72,7 +71,7 @@ const CohortLifetimeValue: React.FC = () => {
       {
         label: "Total Lifetime Value",
         data: totalLifetimeValues,
-        backgroundColor: "rgba(255, 99, 132, 0.7)", // Semi-transparent red
+        backgroundColor: "rgba(255, 99, 132, 0.7)",
         borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 1,
         yAxisID: "y2",
