@@ -54,7 +54,37 @@ This project is a full stack web application built to analyze e-commerce data fr
 
 ## Installation & Running Locally
 
+## Installation & Running Locally
+
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/ecommerce-data-visualization.git
-   cd ecommerce-data-visualization
+   git clone [[https://github.com/yourusername/ecommerce-data-visualization.git](https://github.com/developerMasum/RapidQuest-Task)](https://github.com/developerMasum/RapidQuest-Task)
+  
+```
+```bash
+   cd client
+npm install
+npm run dev
+```
+```bash
+   cd client
+npm install
+npm run dev
+```
+```bash
+   cd ../server
+npm install
+
+```
+```bash
+  DATABASE_URL=mongodb+srv://db_user_read:zHLuO45zk1upaRmp@cluster0.aaflc.mongodb.net/RQ_Analytics?retryWrites=true&w=majority&appName=Cluster0
+PORT=5000
+
+```
+```bash
+   npm run start:dev
+
+```
+
+
+
